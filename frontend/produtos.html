@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Produtos</title>
+</head>
+<body>
+    <header>
+        <span>Bem-vindo, <span id="nome-usuario"></span></span>
+        <button onclick="fazerLogout()">Sair</button>
+    </header>
+    
+    <h1>Página de Produtos</h1>
+    <!-- Conteúdo da página -->
+    
+    <script>
+        // Quando a página carregar
+        document.addEventListener('DOMContentLoaded', function() {
+            // Recupera o nome do usuário do localStorage
+            const nomeUsuario = localStorage.getItem('nomeUsuario');
+            const usuarioLogado = localStorage.getItem('usuarioLogado');
+            
+            if (nomeUsuario) {
+                // Exibe o nome do usuário na página
+                document.getElementById('nome-usuario').textContent = nomeUsuario;
+                document.getElementById('usuario-logado').textContent = usuarioLogado;
+            } else {
+                // Se não houver usuário logado, redireciona para login
+                window.location.href = '/login.html';
+            }
+        });
+
+        // Função de logout
+        function fazerLogout() {
+            localStorage.removeItem('usuarioLogado');
+            localStorage.removeItem('nomeUsuario');
+            window.location.href = '/login.html';
+        }
+    </script>
+</body>
+</html>
