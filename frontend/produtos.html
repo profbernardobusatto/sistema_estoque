@@ -9,11 +9,11 @@
             font-family: Arial, sans-serif;
             margin: 0;
             padding: 20px;
-            background-color: #f0f0f0;
+            background-color: #f5f5f5;
         }
         
         .container {
-            max-width: 1000px;
+            max-width: 1200px;
             margin: 0 auto;
             background: white;
             padding: 20px;
@@ -21,68 +21,79 @@
             box-shadow: 0 2px 5px rgba(0,0,0,0.1);
         }
         
-        h1 {
-            text-align: center;
-            color: #333;
+        header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
             margin-bottom: 20px;
+            padding-bottom: 15px;
+            border-bottom: 1px solid #ddd;
         }
         
-        .product-list {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
-            gap: 15px;
+        h1 {
+            color: #333;
+            margin: 0;
         }
         
-        .product-card {
-            border: 1px solid #ddd;
-            padding: 15px;
-            border-radius: 5px;
-            background: white;
+        .user-info {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .logout-btn {
+            background: #d33;
+            color: white;
+            border: none;
+            padding: 8px 15px;
+            border-radius: 3px;
+            cursor: pointer;
+        }
+        
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+        
+        th {
+            background-color: #f0f0f0;
+            padding: 12px;
+            text-align: left;
+            border-bottom: 2px solid #ddd;
+        }
+        
+        td {
+            padding: 12px;
+            border-bottom: 1px solid #ddd;
         }
         
         .product-name {
             font-weight: bold;
-            margin-bottom: 5px;
-            font-size: 18px;
-        }
-        
-        .product-description {
-            color: #666;
-            margin-bottom: 10px;
-            font-size: 14px;
         }
         
         .product-details {
-            display: flex;
-            justify-content: space-between;
-            margin-bottom: 15px;
+            font-size: 14px;
+            color: #666;
         }
         
         .product-price {
-            font-weight: bold;
             color: #2a8f2a;
-        }
-        
-        .product-category {
-            background: #eaeaea;
-            padding: 3px 8px;
-            border-radius: 3px;
-            font-size: 12px;
+            font-weight: bold;
         }
         
         .quantity-controls {
             display: flex;
+            gap: 10px;
             align-items: center;
-            justify-content: space-between;
         }
         
         .quantity-btn {
             width: 30px;
             height: 30px;
             border: 1px solid #ccc;
-            background: #f5f5f5;
+            background: #f9f9f9;
             cursor: pointer;
-            font-size: 16px;
             border-radius: 3px;
         }
         
@@ -95,7 +106,6 @@
         }
         
         .quantity-display {
-            font-size: 18px;
             font-weight: bold;
             min-width: 40px;
             text-align: center;
@@ -108,87 +118,148 @@
 </head>
 <body>
     <div class="container">
-        <h1>Controle de Estoque</h1>
-
         <header>
-            <span>Bem-vindo, <span id="nome-usuario"></span>
-            <button onclick="fazerLogout()">Sair</button>
+            <h1>Controle de Estoque</h1>
+            <div class="user-info">
+                <span>Bem-vindo, <span id="nome-usuario"></span></span>
+                <button class="logout-btn" onclick="fazerLogout()">Sair</button>
+            </div>
         </header>
         
-        <div class="product-list" id="productList">
-
-        </div>
+        <table>
+            <thead>
+                <tr>
+                    <th>Produto</th>
+                    <th>Detalhes</th>
+                    <th>Preço</th>
+                    <th>Quantidade</th>
+                    <th>Ações</th>
+                </tr>
+            </thead>
+            <tbody id="productList">
+                <!-- Produtos serão carregados aqui -->
+            </tbody>
+        </table>
     </div>
 
     <script>
- 
         // Quando a página carregar
         document.addEventListener('DOMContentLoaded', function() {
             // Recupera o nome do usuário do localStorage
-            const nomeUsuario = localStorage.getItem('nomeUsuario');
             const usuarioLogado = localStorage.getItem('usuarioLogado');
-            const sessionToken = localStorage.getItem('sessionToken');
-
-            console.log(nomeUsuario);
-            
+            const nomeUsuario = localStorage.getItem('nomeUsuario');
+            const sessionToken = localStorage.getItem('sessionToken');           
             
             if (sessionToken) {
                 // Exibe o nome do usuário na página    
-                document.getElementById('nome-usuario').textContent = nomeUsuario
+                document.getElementById('nome-usuario').textContent = nomeUsuario || usuarioLogado;
 
                 // Carrega os produtos da API
-                fetch("http://localhost:3000/produtos/lista", {
-                    method: "GET",
-                    headers: { 
-                        "Content-Type": "application/json"
-                    },
-                })
-                    .then(response => response.json())      
-                    .then(data => {
-                        const productList = document.getElementById('productList');
-                        productList.innerHTML = ''; 
-
-                        data.forEach(product => {
-                            const productCard = document.createElement('div');
-                            productCard.className = 'product-card';
-
-                            productCard.innerHTML = `
-                                <div class="product-name">${product.nome}</div>
-                                <div class="product-details">
-                                    <span class="product-price">R$ ${product.preco}</span>
-                                    <span class="product-color">${product.cor}</span>
-                                    <span class="product-weigth">${product.peso}</span>
-                                </div>
-                                <div class="quantity-controls">
-                                    <button class="quantity-btn decrease" onclick="atualizarQuantidade(${product.id}, -1)">-</button>
-                                    <span class="quantity-display ${product.quantidade <= 5 ? 'low-stock' : ''}">${product.quantidade}</span>
-                                    <button class="quantity-btn increase" onclick="atualizarQuantidade(${product.id}, 1)">+</button>
-                                </div>
-                            `;
-
-                            productList.appendChild(productCard);
-                        });
-                    })
-
+                carregarProdutos();
             } else {
                 // Se não houver usuário logado, redireciona para login
                 window.location.href = '/login.html';
             }
         });
 
+        // Função para carregar produtos
+        function carregarProdutos() {
+            fetch("http://localhost:3000/produtos/lista", {
+                method: "GET",
+                headers: { 
+                    "Content-Type": "application/json"
+                },
+            })
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error('Erro ao carregar produtos');
+                }
+                return response.json();
+            })
+            .then(data => {
+                const productList = document.getElementById('productList');
+                productList.innerHTML = ''; 
+
+                if (data.length === 0) {
+                    productList.innerHTML = `
+                        <tr>
+                            <td colspan="5" style="text-align: center; padding: 30px; color: #666;">
+                                Nenhum produto encontrado.
+                            </td>
+                        </tr>
+                    `;
+                    return;
+                }
+
+                console.log(data);
+                
+
+                data.forEach(product => {
+                    const row = document.createElement('tr');
+                    
+                    row.innerHTML = `
+                        <td class="product-name">${product.nome || 'Sem nome'}</td>
+                        <td class="product-details">
+                            ${product.marca ? `<div>Marca: ${product.marca}</div>` : ''}
+                            ${product.cor ? `<div>Cor: ${product.cor}</div>` : ''}
+                            ${product.peso ? `<div>Peso: ${product.peso}</div>` : ''}
+                        </td>
+                        <td class="product-price">R$ ${(product.preco || 0)}</td>
+                        <td>
+                            <span class="quantity-display ${(product.quantidade || 0) <= 5 ? 'low-stock' : ''}">
+                                ${product.quantidade || 0}
+                            </span>
+                        </td>
+                        <td>
+                            <div class="quantity-controls">
+                                <button class="quantity-btn decrease" onclick="atualizarQuantidade(${product.id}, -1)">-</button>
+                                <button class="quantity-btn increase" onclick="atualizarQuantidade(${product.id}, 1)">+</button>
+                            </div>
+                        </td>
+                    `;
+
+                    productList.appendChild(row);
+                });
+            })
+            .catch(error => {
+                console.error('Erro:', error);
+                const productList = document.getElementById('productList');
+                productList.innerHTML = `
+                    <tr>
+                        <td colspan="5" style="text-align: center; padding: 30px; color: #d33;">
+                            Erro ao carregar produtos.
+                        </td>
+                    </tr>
+                `;
+            });
+        }
+
+
+        function atualizarQuantidade(productId, change) {
+            alert(`Quantidade do produto ${productId} alterada em ${change}.`);
+
+            console.log(productId, change);
+            
+
+            fetch(`http://localhost:3000/produtos/atualizar/${productId}`, {
+                method: "PUT",
+                headers: { 
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify({ change })
+            })
 
 
 
-
-
-        // Função de logout
-        function fazerLogout() {
-            localStorage.removeItem('usuarioLogado');
-            localStorage.removeItem('nomeUsuario');
-            window.location.href = '/login.html';
         }
 
         
+        function fazerLogout() {
+            localStorage.removeItem('usuarioLogado');
+            localStorage.removeItem('nomeUsuario');
+            localStorage.removeItem('sessionToken');
+            window.location.href = '/login.html';
+        }
     </script>
 </body>
 </html>

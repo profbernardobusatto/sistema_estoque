@@ -10,24 +10,18 @@ const app = express();
 app.use(cors());
 app.use(express.json());
 
-// Conexão com banco de dados CORRIGIDA
-let connection; // ← Variável para gerenciar a conexão
+// Conexão com o banco de dados MySQL
+let connection; 
 
-try {
-  connection = mysql.createConnection(config.db);
+connection = mysql.createConnection(config.db);
   
-  connection.connect((err) => { // ← Connect com callback
-    if (err) {
-      console.error('Erro ao conectar ao banco de dados MySQL:', err);
-      process.exit(1);
-    } else {
-      console.log('Conectado ao banco de dados MySQL');
-    }
-  });
-} catch (err) {
-  console.error('Erro na criação da conexão:', err);
-  process.exit(1);
-}
+connection.connect((err) => {
+	if (err) {
+		console.error('Erro ao conectar ao banco de dados MySQL:', err);
+		process.exit(1);
+	} 
+});
+
 
 // Tela de login
 app.get('/', (req, res) => {
@@ -46,7 +40,7 @@ app.post('/login', async (req, res) => {
       'SELECT * FROM usuarios WHERE nome_usuario = ?', 
       [usuario]
     );
-
+	
     // Usuário não encontrado
     if (results.length === 0) {
       return res.json({ 
@@ -56,7 +50,7 @@ app.post('/login', async (req, res) => {
     }
 
     const user = results[0];
-
+	
     // Comparar senhas com await
     const senhaConfere = await bcrypt.compare(senha, user.senha);
     
@@ -69,7 +63,7 @@ app.post('/login', async (req, res) => {
 
     res.json({ 
       success: true,
-      nome: user.nome,
+      nome: user.nome_completo,
       usuario: user.nome_usuario,
       sessionToken: sessionToken
     });
@@ -93,7 +87,7 @@ app.get('/produtos', (req, res) => {
 app.get('/produtos/lista', (req, res) => {
 	// busca dados da tabela de estoque no banco de dados com join na tabela de produtos buscando nome, marca, preco, cor, peso
 	const results = connection.query(
-	`SELECT p.nome, p.marca, p.preco, p.cor, p.peso, e.quantidade 
+	`SELECT p.nome, p.marca, p.preco, p.cor, p.peso, p.id, e.quantidade 
 	 FROM produtos p
 	 JOIN estoque e ON p.id = e.produto_id`,
 		(err, results) => {
@@ -101,9 +95,7 @@ app.get('/produtos/lista', (req, res) => {
 				console.error('Erro ao buscar produtos:', err);
 				return res.status(500).send('Erro ao buscar produtos');
 			}
-			// Enviar arquivo HTML
-			// res.sendFile(path.join(__dirname, '../frontend/produtos.html'));
-			// Enviar dados dos produtos como JSON
+
 			res.json(results);
 		}
 	);		
