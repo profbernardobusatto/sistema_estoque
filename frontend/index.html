@@ -36,12 +36,14 @@ function enviar() {
   .then(response => response.json())
   .then(data => {
     if (data.success) {
-      // Salva o nome do usuário no localStorage
+      // Salva os dados no localStorage
       localStorage.setItem('usuarioLogado', data.usuario);
       localStorage.setItem('nomeUsuario', data.nome);
+      localStorage.setItem('sessionToken', data.sessionToken);
 
-      // trocar por get na pagina de produtos (alterar backend)
-      window.location.href = "produtos.html";
+      // redireciona 
+      window.location.href = "http://localhost:3000/produtos";
+
     } else {
       alert("Usuário ou senha inválidos");
     }
