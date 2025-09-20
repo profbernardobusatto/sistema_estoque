@@ -5,7 +5,6 @@ const path = require('path');
 const bcrypt = require('bcrypt');
 const crypto = require('crypto');
 const config = require('./config');
-const { log } = require('console');
 
 const app = express();
 app.use(cors());
@@ -107,8 +106,11 @@ app.get('/produtos/lista', (req, res) => {
 app.put('/produtos/atualizar/:id', (req, res) => {
 	const productId = req.params.id;
 	const change = parseInt(req.body.change, 10);	
+	const sessionToken = req.body.sessionToken;
+	const usuario = req.body.usuario;
 
-	console.log(productId, change);
+
+	console.log(usuario);
 
 	// atualizar quantidade 
 	connection.query(`UPDATE estoque SET quantidade = quantidade + ? WHERE produto_id = ?`,
@@ -117,6 +119,15 @@ app.put('/produtos/atualizar/:id', (req, res) => {
 			console.error('Erro ao atualizar quantidade:', err);
 			return res.status(500).send('Erro ao atualizar quantidade');
 		}	
+
+		// registrar alteração no log
+		connection.query('INSERT into log_estoque (produto_id, alteracao, usuario, token, data_hora) VALUES (?, ?, ?, ?, NOW())',
+			[productId, change, usuario, sessionToken], (err, results) => {
+			if (err) {
+				console.error('Erro ao inserir log de estoque:', err);
+				return res.status(500).send('Erro ao inserir log de estoque');
+			}
+		});
 
 		res.json({ success: true });
 	});

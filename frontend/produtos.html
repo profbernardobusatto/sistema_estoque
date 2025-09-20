@@ -148,17 +148,20 @@
             // Recupera o nome do usuário do localStorage
             const usuarioLogado = localStorage.getItem('usuarioLogado');
             const nomeUsuario = localStorage.getItem('nomeUsuario');
-            const sessionToken = localStorage.getItem('sessionToken');           
+            const sessionToken = localStorage.getItem('sessionToken');     
+            
+            console.log(usuarioLogado, nomeUsuario, sessionToken);
+            
             
             if (sessionToken) {
                 // Exibe o nome do usuário na página    
-                document.getElementById('nome-usuario').textContent = nomeUsuario || usuarioLogado;
+                document.getElementById('nome-usuario').textContent = nomeUsuario;
 
                 // Carrega os produtos da API
                 carregarProdutos();
             } else {
                 // Se não houver usuário logado, redireciona para login
-                window.location.href = '/login.html';
+                window.location.href = '/';
             }
         });
 
@@ -189,10 +192,7 @@
                         </tr>
                     `;
                     return;
-                }
-
-                console.log(data);
-                
+                }                
 
                 data.forEach(product => {
                     const row = document.createElement('tr');
@@ -241,7 +241,11 @@
                 headers: { 
                     "Content-Type": "application/json"
                 },
-                body: JSON.stringify({ change })
+                body: JSON.stringify({ 
+                    change: change,
+                    usuario: localStorage.getItem('usuarioLogado'), 
+                    sessionToken: localStorage.getItem('sessionToken')
+                 })
             }) 
             .then(response => {                
                 if (!response.ok) {
@@ -249,24 +253,7 @@
                 }
 
                 // alterar quantidade no html
-                carregarProdutos();
-
-                // salvar na tabela de logs
-                fetch("http://localhost:3000/produtos/log", {
-                    method: "POST",
-                    headers: { 
-                        "Content-Type": "application/json"
-                    },
-                    body: JSON.stringify({ 
-                        usuario: localStorage.getItem('usuarioLogado'),
-                        sessionToken: localStorage.getItem('sessionToken'),
-                        produtoId: productId,
-                        change: change
-                    })
-                })
-
-
-                
+                carregarProdutos();                
             })
         }
 
@@ -275,7 +262,7 @@
             localStorage.removeItem('usuarioLogado');
             localStorage.removeItem('nomeUsuario');
             localStorage.removeItem('sessionToken');
-            window.location.href = '/login.html';
+            window.location.href = '/';
         }
     </script>
 </body>

@@ -35,9 +35,9 @@ function enviar() {
   })
   .then(response => response.json())
   .then(data => {
-    if (data.success) {
+    if (data.success) {      
       // Salva os dados no localStorage
-      localStorage.setItem('usuarioLogado', data.nome_usuario);
+      localStorage.setItem('usuarioLogado', data.usuario);
       localStorage.setItem('nomeUsuario', data.nome);
       localStorage.setItem('sessionToken', data.sessionToken);
 
