@@ -1,10 +1,11 @@
 const express = require('express');
-const mysql = require('mysql2'); // ← Corrigido o import
+const mysql = require('mysql2');
 const cors = require('cors');
 const path = require('path');
 const bcrypt = require('bcrypt');
 const crypto = require('crypto');
 const config = require('./config');
+const { log } = require('console');
 
 const app = express();
 app.use(cors());
@@ -85,21 +86,40 @@ app.get('/produtos', (req, res) => {
 
 // busca produtos
 app.get('/produtos/lista', (req, res) => {
-	// busca dados da tabela de estoque no banco de dados com join na tabela de produtos buscando nome, marca, preco, cor, peso
-	const results = connection.query(
-	`SELECT p.nome, p.marca, p.preco, p.cor, p.peso, p.id, e.quantidade 
-	 FROM produtos p
-	 JOIN estoque e ON p.id = e.produto_id`,
-		(err, results) => {
-			if (err) {
-				console.error('Erro ao buscar produtos:', err);
-				return res.status(500).send('Erro ao buscar produtos');
+	// busca dados da tabela de estoque  
+	// com join na tabela de produtos 
+	// buscando nome, marca, preco, cor, peso e id
+	connection.query(
+		`SELECT p.nome, p.marca, p.preco, p.cor, p.peso, p.id, e.quantidade 
+		FROM produtos p
+		JOIN estoque e ON p.id = e.produto_id`,
+			(err, results) => {
+				if (err) {
+					console.error('Erro ao buscar produtos:', err);
+					return res.status(500).send('Erro ao buscar produtos');
+				}
+
+				res.json(results);
 			}
-
-			res.json(results);
-		}
 	);		
+});
 
+app.put('/produtos/atualizar/:id', (req, res) => {
+	const productId = req.params.id;
+	const change = parseInt(req.body.change, 10);	
+
+	console.log(productId, change);
+
+	// atualizar quantidade 
+	connection.query(`UPDATE estoque SET quantidade = quantidade + ? WHERE produto_id = ?`,
+		[change, productId], (err, results) => {
+		if (err) {
+			console.error('Erro ao atualizar quantidade:', err);
+			return res.status(500).send('Erro ao atualizar quantidade');
+		}	
+
+		res.json({ success: true });
+	});
 });
 
 // Iniciar servidor

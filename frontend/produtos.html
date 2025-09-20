@@ -206,7 +206,7 @@
                         </td>
                         <td class="product-price">R$ ${(product.preco || 0)}</td>
                         <td>
-                            <span class="quantity-display ${(product.quantidade || 0) <= 5 ? 'low-stock' : ''}">
+                            <span class="quantity-display ${(product.quantidade || 0) <= 2 ? 'low-stock' : ''}">
                                 ${product.quantidade || 0}
                             </span>
                         </td>
@@ -236,21 +236,38 @@
 
 
         function atualizarQuantidade(productId, change) {
-            alert(`Quantidade do produto ${productId} alterada em ${change}.`);
-
-            console.log(productId, change);
-            
-
-            fetch(`http://localhost:3000/produtos/atualizar/${productId}`, {
+             fetch(`http://localhost:3000/produtos/atualizar/${productId}`, {
                 method: "PUT",
                 headers: { 
                     "Content-Type": "application/json"
                 },
                 body: JSON.stringify({ change })
+            }) 
+            .then(response => {                
+                if (!response.ok) {
+                    throw new Error('Erro ao atualizar quantidade');
+                }
+
+                // alterar quantidade no html
+                carregarProdutos();
+
+                // salvar na tabela de logs
+                fetch("http://localhost:3000/produtos/log", {
+                    method: "POST",
+                    headers: { 
+                        "Content-Type": "application/json"
+                    },
+                    body: JSON.stringify({ 
+                        usuario: localStorage.getItem('usuarioLogado'),
+                        sessionToken: localStorage.getItem('sessionToken'),
+                        produtoId: productId,
+                        change: change
+                    })
+                })
+
+
+                
             })
-
-
-
         }
 
         
