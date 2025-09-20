@@ -12,7 +12,6 @@ app.use(express.json());
 
 // Conexão com o banco de dados MySQL
 let connection; 
-
 connection = mysql.createConnection(config.db);
   
 connection.connect((err) => {
@@ -22,7 +21,6 @@ connection.connect((err) => {
 	} 
 });
 
-
 // Tela de login
 app.get('/', (req, res) => {
   res.sendFile(path.join(__dirname, '../frontend/index.html'));
@@ -30,8 +28,7 @@ app.get('/', (req, res) => {
 
 // autenticar login
 app.post('/login', async (req, res) => {
-  try {
-    let usuario = req.body.usuario;
+  let usuario = req.body.usuario;
     let senha = req.body.senha;
     let sessionToken = crypto.randomBytes(64).toString('hex');
     
@@ -51,7 +48,7 @@ app.post('/login', async (req, res) => {
 
     const user = results[0];
 	
-    // Comparar senhas com await
+    // Comparar senhas
     const senhaConfere = await bcrypt.compare(senha, user.senha);
     
     if (!senhaConfere) {
@@ -61,20 +58,13 @@ app.post('/login', async (req, res) => {
       });
     }
 
+	// retorna dados pro cliente
     res.json({ 
       success: true,
       nome: user.nome_completo,
       usuario: user.nome_usuario,
       sessionToken: sessionToken
     });
-
-  } catch (err) {
-    console.error('Erro no login:', err);
-    res.status(500).json({ 
-      success: false, 
-      message: 'Erro no servidor' 
-    });
-  }
 });
 
 // pagina produtos
