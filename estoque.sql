@@ -46,11 +46,11 @@ CREATE TABLE log_estoque (
 
 INSERT INTO usuarios (nome_completo, nome_usuario, senha)
 VALUES
-('Administrador do Sistema', 'admin', '$2b$10$Yf4o3QAzjZ5X8J8Zy8Q7Bu6W5w5nqUuAV9/3xiJOPFbzyVDBvExgS'),
-('Maria Oliveira', 'maria', '$2b$10$Yf4o3QAzjZ5X8J8Zy8Q7Bu6W5w5nqUuAV9/3xiJOPFbzyVDBvExgS'),
-('João Silva', 'joao', '$2b$10$Yf4o3QAzjZ5X8J8Zy8Q7Bu6W5w5nqUuAV9/3xiJOPFbzyVDBvExgS'),
-('Ana Costa', 'ana', '$2b$10$Yf4o3QAzjZ5X8J8Zy8Q7Bu6W5w5nqUuAV9/3xiJOPFbzyVDBvExgS'),
-('Carlos Pereira', 'carlos', '$2b$10$Yf4o3QAzjZ5X8J8Zy8Q7Bu6W5w5nqUuAV9/3xiJOPFbzyVDBvExgS');
+('Administrador do Sistema', 'admin', '$2a$10$GoggPlyqu/9Xhl2HkxDMseO2RjDlnOu4yG4jlWcQZC7.E6OmxcZiK'),
+('Maria Oliveira', 'maria', '$2a$10$GoggPlyqu/9Xhl2HkxDMseO2RjDlnOu4yG4jlWcQZC7.E6OmxcZiK'),
+('João Silva', 'joao', '$2a$10$GoggPlyqu/9Xhl2HkxDMseO2RjDlnOu4yG4jlWcQZC7.E6OmxcZiK'),
+('Ana Costa', 'ana', '$2a$10$GoggPlyqu/9Xhl2HkxDMseO2RjDlnOu4yG4jlWcQZC7.E6OmxcZiK'),
+('Carlos Pereira', 'carlos', '$2a$10$GoggPlyqu/9Xhl2HkxDMseO2RjDlnOu4yG4jlWcQZC7.E6OmxcZiK');
 
 INSERT INTO produtos (nome, marca, preco, cor, peso)
 VALUES
@@ -95,4 +95,5 @@ VALUES
 (2, -1, 'maria', 'token2', NOW() - INTERVAL 3 DAY),
 (3, +2, 'joao', 'token3', NOW() - INTERVAL 2 DAY),
 (4, -1, 'ana', 'token4', NOW() - INTERVAL 1 DAY),
+
 (5, +10, 'carlos', 'token5', NOW());
