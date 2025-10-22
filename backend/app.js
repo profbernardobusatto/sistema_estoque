@@ -21,7 +21,7 @@ connection.connect((err) => {
 	} 
 });
 
-// Tela de login
+// tela de login
 app.get('/', (req, res) => {
   res.sendFile(path.join(__dirname, '../frontend/index.html'));
 });
@@ -100,7 +100,7 @@ app.put('/produtos/atualizar/:id', (req, res) => {
 	const usuario = req.body.usuario;
 
 
-	console.log(usuario);
+	// console.log(usuario);
 
 	// atualizar quantidade 
 	connection.query(`UPDATE estoque SET quantidade = quantidade + ? WHERE produto_id = ?`,
@@ -108,7 +108,7 @@ app.put('/produtos/atualizar/:id', (req, res) => {
 		if (err) {
 			console.error('Erro ao atualizar quantidade:', err);
 			return res.status(500).send('Erro ao atualizar quantidade');
-		}	
+		}
 
 		// registrar alteração no log
 		connection.query('INSERT into log_estoque (produto_id, alteracao, usuario, token, data_hora) VALUES (?, ?, ?, ?, NOW())',
